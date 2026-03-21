@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERIT Lab</title>
+    
+    <!-- 필수 라이브러리 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons (최신 버전 사용) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        /**
+         * =================================================================================
+         * [수정 가이드] DATA 영역의 내용만 수정하시면 홈페이지에 반영됩니다.
+         * =================================================================================
+         */
+        
+        const DATA = {
+            // 1. 연구실 기본 정보
+            info: {
+                name: "MERIT Lab",
+                affiliation: "Smart Energy System Convergence Research Institute (SERI)",
+                university: "Gachon University",
+                seriLink: "https://sites.google.com/gachon.ac.kr/seri/home",
+                
+                // Hero 섹션 설명 (국문)
+                heroDescKo: "스마트에너지시스템융합연구소 지능형 에너지 자원 관리 연구실은 최적화(Optimization)와 기계학습(Machine Learning) 기법을 활용하여 에너지 자원 관리(Resource Management) 및 수요 관리(Demand Side Management) 시스템의 효율성을 높이는 알고리즘을 연구합니다.",
+                // Hero 섹션 설명 (영문)
+                heroDescEn: "MERIT Lab researches algorithms to enhance the efficiency of resource management and demand-side management systems by utilizing optimization and machine learning techniques.",
+
+                // About 섹션 설명
+                aboutTitle: "Vision & Mission",
+                aboutDesc: "MERIT 연구실은 에너지 데이터의 불확실성을 극복하고, 지속 가능한 미래 전력망 구현을 목표로 합니다. 단순한 이론적 탐구를 넘어, 실제 산업 현장의 복잡한 제약 조건을 고려한 실용적인 솔루션을 제공하는 데 주력하고 있습니다.\n\n수학적 모델링의 정교함과 인공지능의 유연성을 결합하여, 분산 자원이 공존하는 스마트 그리드 환경에서 가장 효율적이고 안정적인 운영 패러다임을 제시합니다."
+            },
+
+            // 2. 교수님 프로필
+            professor: {
+                name: "오은성 교수\n(Prof. Eunsung Oh)",
+                // title: "Principal Investigator",
+                email: "esoh@gachon.ac.kr",
+                profileImage: "https://merit-gachon.github.io/lab-website/assets/images/profile.jpg",
+                bio: [
+                    "현재 가천대학교 차세대스마트에너지시스템융합학과와 전기공학과 부교수로 재직 중입니다.",
+                    "주요 연구 분야는 에너지 자원 최적화, 데이터 기반 수요 관리, 그리고 강화학습을 적용한 자원 제어입니다. 수학적 최적화와 인공지능 기법을 결합하여 에너지 시스템의 문제를 해결하는 데 주력합니다."
+                ],
+                // [NEW] 경력 사항 추가
+                career: [
+                    "가천대학교 전기공학과, 부교수 (현재)",
+                    "한국에너지기술평가원, 선임연구원",
+                    "University of Southern California, Post-doctoral research"
+                ],
+                education: [
+                    "Ph.D. in Electrical & Electronic Engineering, Yonsei University",
+                    "M.S. in Electrical & Electronic Engineering, Yonsei University",
+                    "B.S. in Electrical & Electronic Engineering, Yonsei University"
+                ]
+            },
+
+            // 3. 연구 분야 (Keywords added for SEO and clarity)
+            researchAreas: [
+                {
+                    title: "Optimization & Resource Management",
+                    desc: "분산 에너지 자원(DER)과 ESS의 수학적 모델링 및 최적 스케줄링(Optimal Scheduling) 알고리즘 연구",
+                    keywords: ["Optimization", "Resource Management", "Energy Management", "ESS Management","Optimal Scheduling","Economic Dispatch"]
+                },
+                {
+                    title: "Demand Side Management (DSM & DR)",
+                    desc: "전력 수요 반응(DR) 메커니즘 설계 및 데이터 분석을 통한 소비자 패턴 기반의 수요 관리 전략 수립",
+                    keywords: ["Demand Side Management", "Demand Response", "Energy Efficiency", "Non-Wires Alternatives",  "Data Analytics"]
+                },
+                {
+                    title: "Machine Learning & Reinforcement Learning",
+                    desc: "불확실한 환경에서의 의사결정을 위한 강화학습 에이전트 개발 및 에너지 데이터 머신러닝 분석",
+                    keywords: ["Machine Learning", "Deep Learning", "Reinforcement Learning", "Uncertainty", "Quantum Computing", "Intelligent Control"]
+                }
+            ],
+
+            // 4. 프로젝트 목록
+            projects: [
+                {
+                    title: "에너지 관리 시스템 최적 운영을 위한 양자컴퓨팅 기반 다중 목적 강화학습 기술 개발",
+                    titleEn: "Quantum-computing-based multi-objective reinforcement learning for energy management system optimal operation",
+                    period: "2025 - 2028",
+                    funding: "과학기술정보통신부/한국연구재단(NRF)",
+                    status: "Ongoing",
+                    description: "Single-/Shared-ESS, P2P, UC, ED에 적용 가능한 양자컴퓨팅 기반 다중 목적 강화학습 알고리즘 개발"
+                },
+                {
+                    title: "그리드 유연성 자원화를 위한 한국형 GEB 기반 기술·체계 및 BM 개발",
+                    titleEn: "Development of K-GEB-based technology·framework and BMs as grid flexibility resources",
+                    period: "2025 - 2028",
+                    funding: "기후에너지환경부/한국에너지기술평가원(KETEP)",
+                    status: "Ongoing",
+                    description: "그리드 유연성 자원으로서의 건물을 위한 GEB 기반 기술 개발"
+                },
+                {
+                    title: "차기 전력시장과 연계된 수요반응 생태계 구축을 위한 온디바이스 AI 기반 에너지 수요 관리 기술과 80MW 이상 집합 수요자원화 기술 개발 및 관련 제도·기술 실증",
+                    titleEn: "Development of on-device AI-based energy demand management technology and 80MW collective demand resource technology and demonstration of related systems and technologies to build a demand response ecosystem linked to the next power market",
+                    period: "2025 - 2028",
+                    funding: "기후에너지환경부/한국에너지기술평가원(KETEP)",
+                    status: "Ongoing",
+                    description: "배전 계통 상황을 고려한 수요 반응 및 복귀 알고리즘 개발"
+                },
+                {
+                    title: "데이터기반 에너지시스템 혁신 연구센터",
+                    titleEn: "Data-driven energy system innovation research center",
+                    period: "2023 - 2030",
+                    funding: "과학기술정보통신부/정보통신기획평가원(IITP)",
+                    status: "Ongoing",
+                    description: "에너지 분야 디지털 전환에 따라 나타나는 문제 해결을 위한 데이터 기반 ICT 기술 개발 및 전문인력양성"
+                },
+                {
+                    title: "AI기반 P2P 에너지 거래 및 신재생에너지 발전량 변동 대응 기술 개발",
+                    titleEn: "Development of AI-based P2P energy transaction and renewable energy generation change response technology",
+                    period: "2022 - 2024",
+                    funding: "한국전력공사 전력연구원(KEPRI)",
+                    status: "Completed",
+                    description: "AI기반 신재생에너지 출력 변동 예측 및 부하 조정 기술 개발"
+                },
+                {
+                    title: "스마트에너지커뮤니티를 위한 에너지 공유 시스템 최적운영방안",
+                    titleEn: "The optimal energy sharing system operational strategy for smart energy community",
+                    period: "2020 - 2023",
+                    funding: "과학기술정보통신부/한국연구재단(NRF)",
+                    status: "Completed",
+                    description: "Shared-PV/ESS, P2P 등을 고려한 에너지 공유 시스템 통합 최적운영방안 개발"
+                },
+                {
+                    title: "대규모 에너지소비 산업의 안정적 전력공급과 최적 탄소중립 방안",
+                    titleEn: "Stable electricity supply for steel industry and optimal carbon-neutral energy balance",
+                    period: "2020 - 2021",
+                    funding: "포스코(POSCO)",
+                    status: "Completed",
+                    description: "대규모 에너지 사용 산업체의 장/단기 안정적인 전력확보 방안과 최적화된 탄소중립 포트폴리오 구성 방안 제시"
+                },
+                {
+                    title: "시공간 불확실성 분석을 통한 에너지 시스템 최적운영방안",
+                    titleEn: "The optimal energy system operational strategy based on temporal and space uncertainty analysis",
+                    period: "2017 - 2020",
+                    funding: "과학기술정보통신부/한국연구재단(NRF)",
+                    status: "Completed",
+                    description: "에너지 데이터 시공간 불확실성 분석 및 이를 활용한 에너지 시스템 최적운영방안 개발"
+                },
+                {
+                    title: "Green IT 구현을 위한 통신 네트워크의 에너지 효율적 운영 방안",
+                    titleEn: "Energy-aware communication network management for green IT",
+                    period: "2013 - 2016",
+                    funding: "미래창조과학기술부/한국연구재단(NRF)",
+                    status: "Completed",
+                    description: "이종 및 공유 네트워크 모델을 고려한 에너지 효율적 기지국 운영 방안 개발"
+                },
+                {
+                    title: "신재생에너지 통합 플랫폼용 EMS 제어 알고리즘 개발",
+                    titleEn: "Development of EMS control algorithms for renewable energy integration platform",
+                    period: "2013 - 2014",
+                    funding: "한국에너지기술연구원(KIER)",
+                    status: "Completed",
+                    description: "빌딩용 신재생에너지 통합 플랫폼을 위해 신재생원 및 저장장치 특성을 고려한 경제적 운영 알고리즘 개발"
+                }
+            ],
+
+            // 5. 논문 목록 (Updated based on savedrecs.xls with Name Order Changed)
+            publications: [
+                {
+                    year: "2025",
+                    title: "Exploring harmony search for power system optimization: applications, formulations, and open problems",
+                    authors: "Eunsung Oh, Zong Woo Geem",
+                    journal: "Applied Energy",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1016/j.apenergy.2025.126452"
+                },
+                {
+                    year: "2024",
+                    title: "Virtual Energy Storage System Scheduling for Commercial Buildings with Fixed and Dynamic Energy Storage",
+                    authors: "Grmay Yordanos Brhane, Eunsung Oh, Sung-Yong Son",
+                    journal: "Energies",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/en17133292"
+                },
+                {
+                    year: "2024",
+                    title: "A Deep Learning-Based Solar Power Generation Forecasting Method Applicable to Multiple Sites",
+                    authors: "Seon Young Jang, Byung Tae Oh, Eunsung Oh",
+                    journal: "Sustainability",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/su16125240"
+                },
+                {
+                    year: "2024",
+                    title: "Deep-Reinforcement-Learning-Based Vehicle-to-Grid Operation Strategies for Managing Solar Power Generation Forecast Errors",
+                    authors: "Moon-Jong Jang, Eunsung Oh",
+                    journal: "Sustainability",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/su16093851"
+                },
+                {
+                    year: "2023",
+                    title: "Data-Driven Modeling of Vehicle-to-Grid Flexibility in Korea",
+                    authors: "Moon-Jong Jang, Taehoon Kim, Eunsung Oh",
+                    journal: "Sustainability",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/su15107938"
+                },
+                {
+                    year: "2022",
+                    title: "Community Solar Operation Strategy for Smart Energy Communities Considering Resource Fairness",
+                    authors: "Eunsung Oh",
+                    journal: "Applied Sciences",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/app122412867"
+                },
+                {
+                    year: "2022",
+                    title: "Fair Virtual Energy Storage System Operation for Smart Energy Communities",
+                    authors: "Eunsung Oh",
+                    journal: "Sustainability",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/su14159413"
+                },
+                {
+                    year: "2022",
+                    title: "Dynamic Virtual Energy Storage System Operation Strategy for Smart Energy Communities",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "Applied Sciences",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/app12052750"
+                },
+                {
+                    year: "2022",
+                    title: "Appropriate Technology-Based AMI Deployment in Multi-Dwelling Units",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "Energies",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/en15041259"
+                },
+                {
+                    year: "2021",
+                    title: "Risk-Based Virtual Power Plant Implementation Strategy for Smart Energy Communities",
+                    authors: "Eunsung Oh",
+                    journal: "Applied Sciences",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/app11178248"
+                },
+                {
+                    year: "2021",
+                    title: "Risk-Based Virtual Energy Storage System Service Strategy for Prosumers",
+                    authors: "Eunsung Oh",
+                    journal: "Applied Sciences",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/app11073020"
+                },
+                {
+                    year: "2020",
+                    title: "Peer-to-Peer Energy Transaction Mechanisms Considering Fairness in Smart Energy Communities",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "IEEE Access",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/ACCESS.2020.3041838"
+                },
+                {
+                    year: "2020",
+                    title: "Community solar photovoltaic service strategy for commercial buildings considering profit balancing and fairness",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "Energy and Buildings",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1016/j.enbuild.2020.110513"
+                },
+                {
+                    year: "2020",
+                    title: "Reinforcement-Learning-Based Virtual Energy Storage System Operation Strategy for Wind Power Forecast Uncertainty Management",
+                    authors: "Eunsung Oh",
+                    journal: "Applied Sciences",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/app10186420"
+                },
+                {
+                    year: "2020",
+                    title: "Theoretical energy storage system sizing method and performance analysis for wind power forecast uncertainty management",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "Renewable Energy",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1016/j.renene.2020.03.170"
+                },
+                {
+                    year: "2020",
+                    title: "Reinforcement-Learning-Based Energy Storage System Operation Strategies to Manage Wind Power Forecast Uncertainty",
+                    authors: "Eunsung Oh, Hanho Wang",
+                    journal: "IEEE Access",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/ACCESS.2020.2968841"
+                },
+                {
+                    year: "2019",
+                    title: "Shared Electrical Energy Storage Service Model and Strategy for Apartment-Type Factory Buildings",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "IEEE Access",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/ACCESS.2019.2939406"
+                },
+                {
+                    year: "2019",
+                    title: "Transaction Mechanism Based on Two-Dimensional Energy and Reliability Pricing for Energy Prosumers",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "Applied Sciences",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/app9071343"
+                },
+                {
+                    year: "2018",
+                    title: "Study on EV Charging Peak Reduction with V2G Utilizing Idle Charging Stations: The Jeju Island Case",
+                    authors: "Hye-Seung Han, Eunsung Oh, Sung-Yong Son",
+                    journal: "Energies",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.3390/en11071651"
+                },
+                {
+                    year: "2018",
+                    title: "Pair Matching Strategies for Prosumer Market Under Guaranteed Minimum Trading",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "IEEE Access",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/ACCESS.2018.2850928"
+                },
+                {
+                    year: "2018",
+                    title: "Energy-storage system sizing and operation strategies based on discrete Fourier transform for reliable wind-power generation",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "Renewable Energy",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1016/j.renene.2017.10.028"
+                },
+                {
+                    year: "2017",
+                    title: "A new method for cost-effective demand response strategy for apartment-type factory buildings",
+                    authors: "Eunsung Oh, Youngmin Kwon, Sung-Yong Son",
+                    journal: "Energy and Buildings",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1016/j.enbuild.2017.06.044"
+                },
+                {
+                    year: "2017",
+                    title: "A Framework for Consumer Electronics as a Service (CEaaS): A Case of Clustered Energy Storage Systems",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "IEEE Transactions on Consumer Electronics",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TCE.2017.014846"
+                },
+                {
+                    year: "2017",
+                    title: "A Unified Base Station Switching Framework Considering Both Uplink and Downlink Traffic",
+                    authors: "Eunsung Oh, Kyuho Son",
+                    journal: "IEEE Wireless Communications Letters",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/LWC.2016.2625281"
+                },
+                {
+                    year: "2016",
+                    title: "Toward Dynamic Energy Management for Green Manufacturing Systems",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "IEEE Communications Magazine",
+                    type: "Journal",
+                    link: "https://doi.org/10.1109/MCOM.2016.7588232"
+                },
+                {
+                    year: "2016",
+                    title: "Electric energy storage design decision method for demand responsive buildings",
+                    authors: "Eunsung Oh, Sung-Yong Son",
+                    journal: "Energy and Buildings",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1016/j.enbuild.2016.05.048"
+                },
+                {
+                    year: "2015",
+                    title: "Impact of Demand and Price Uncertainties on Customer-side Energy Storage System Operation with Peak Load Limitation",
+                    authors: "Eunsung Oh, Sung-Yong Son, Hyemi Hwang, Jong-Bae Park, Kwang Y. Lee",
+                    journal: "Electric Power Components and Systems",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1080/15325008.2015.1057883"
+                },
+                {
+                    year: "2015",
+                    title: "Energy-efficient design of heterogeneous cellular networks from deployment to operation",
+                    authors: "Kyuho Son, Eunsung Oh, Bhaskar Krishnamachari",
+                    journal: "Computer Networks",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1016/j.comnet.2014.09.018"
+                },
+                {
+                    year: "2014",
+                    title: "Group Building Based Power Consumption Scheduling for the Electricity Cost Minimization with Peak Load Reduction",
+                    authors: "Eunsung Oh, Jong-Bae Park, Sung-Yong Son",
+                    journal: "Journal of Electrical Engineering and Technology",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.5370/JEET.2014.9.6.1843"
+                },
+                {
+                    year: "2013",
+                    title: "Dynamic Base Station Switching-On/Off Strategies for Green Cellular Networks",
+                    authors: "Eunsung Oh, Kyuho Son, Bhaskar Krishnamachari",
+                    journal: "IEEE Transactions on Wireless Communications",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TWC.2013.032013.120494"
+                },
+                {
+                    year: "2012",
+                    title: "Performance analysis of dynamic channel allocation based on the greedy approach for orthogonal frequency-division multiple access downlink systems",
+                    authors: "Eunsung Oh, Choongchae Woo",
+                    journal: "International Journal of Communication Systems",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1002/dac.1300"
+                },
+                {
+                    year: "2011",
+                    title: "Toward Dynamic Energy-Efficient Operation of Cellular Network Infrastructure",
+                    authors: "Eunsung Oh, Bhaskar Krishnamachari, Xin Liu, Zhisheng Niu",
+                    journal: "IEEE Communications Magazine",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/MCOM.2011.5783985"
+                },
+                {
+                    year: "2009",
+                    title: "Catching Resource-Devouring Worms in Next-Generation Wireless Relay Systems: Two-Way Relay and Full-Duplex Relay",
+                    authors: "Hyungsik Ju, Eunsung Oh, Daesik Hong",
+                    journal: "IEEE Communications Magazine",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/MCOM.2009.5277456"
+                },
+                {
+                    year: "2009",
+                    title: "Improving Efficiency of Resource Usage in Two-Hop Full Duplex Relay Systems based on Resource Sharing and Interference Cancellation",
+                    authors: "Hyungsik Ju, Eunsung Oh, Daesik Hong",
+                    journal: "IEEE Transactions on Wireless Communications",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TWC.2009.081049"
+                },
+                {
+                    year: "2009",
+                    title: "Asymmetric Diversity Modulation Scheme in Wireless Fading Relay Channels",
+                    authors: "Jaemin Han, Eunsung Oh, Hyungsik Ju, Daesik Hong",
+                    journal: "IEEE Transactions on Wireless Communications",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TWC.2009.081202"
+                },
+                {
+                    year: "2009",
+                    title: "Effect of Channel-Estimation Error on BER Performance in Cooperative Transmission",
+                    authors: "Seungyoup Han, Seongwoo Ahn, Eunsung Oh, Daesik Hong",
+                    journal: "IEEE Transactions on Vehicular Technology",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TVT.2008.2007644"
+                },
+                {
+                    year: "2009",
+                    title: "A New Modeling Scenario and Analysis of Handoff Algorithms in Multisector Systems With Cochannel Interference",
+                    authors: "Youngbo Cho, Eunsung Oh, Daesik Hong",
+                    journal: "IEEE Transactions on Vehicular Technology",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TVT.2008.926204"
+                },
+                {
+                    year: "2009",
+                    title: "Performance Analysis of Multistage Interference Cancellation for Asynchronous TH-UWB Systems in Multipath Fading Channels",
+                    authors: "Seungyoup Han, Eunsung Oh, Myeongsu Han, Choongchae Woo, Daesik Hong",
+                    journal: "IEEE Transactions on Vehicular Technology",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TVT.2008.924992"
+                },
+                {
+                    year: "2008",
+                    title: "Call Admission Control Strategy for System Throughput Maximization Considering Both Call- and Packet-Level QoSs",
+                    authors: "Eunsung Oh, Seungyoup Han, Choongchae Woo, Daesik Hong",
+                    journal: "IEEE Transactions on Communications",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TCOMM.2008.060536"
+                },
+                {
+                    year: "2008",
+                    title: "Simple dynamic subcarrier allocation with CQI feedback reduction for OFDMA systems",
+                    authors: "Choongchae Woo, Eunsung Oh, Daesik Hong",
+                    journal: "IEEE Transactions on Vehicular Technology",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TVT.2008.917219"
+                },
+                {
+                    year: "2008",
+                    title: "Performance analysis of reuse-partitioning-based subchannelized OFDMA uplink systems in multicell environments",
+                    authors: "Eunsung Oh, Myeon-Gyun Cho, Seungyoup Han, Choongchae Woo, Daesik Hong",
+                    journal: "IEEE Transactions on Vehicular Technology",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/TVT.2007.909310"
+                },
+                {
+                    year: "2008",
+                    title: "Simple technique to enhance diversity order in wireless fading relay channels",
+                    authors: "Jaemin Han, Eunsung Oh, Seongwoo Ahn, Daesik Hong",
+                    journal: "IEEE Communications Letters",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1109/LCOMM.2008.071704"
+                },
+                {
+                    year: "2006",
+                    title: "Performance analysis of dynamic channel allocation based on reuse partitioning in multi-cell OFDMA uplink systems",
+                    authors: "Eunsung Oh, Myeon-Gyun Cho, Seungyoup Han, Choongchae Woo, Daesik Hong",
+                    journal: "IEICE Transactions on Fundamentals",
+                    type: "Journal",
+                    link: "http://dx.doi.org/10.1093/ietfec/e89-a.6.1566"
+                }
+            ],
+
+            // 6. 연락처 정보
+            contact: {
+                location: "경기도 성남시 수정구 성남대로 1342\n가천대학교 공과대학2 316호",
+                phone: "031-750-5346"
+            }
+        };
+
+        /**
+         * =================================================================================
+         * 시스템 로직 (System Logic)
+         * =================================================================================
+         */
+
+        const { useState, useEffect, useRef } = React;
+
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const ref = useRef(null);
+            
+            useEffect(() => {
+                if (ref.current) {
+                    ref.current.innerHTML = `<i data-lucide="${name}" width="${size}" height="${size}" class="${className}"></i>`;
+                    if (window.lucide) {
+                        window.lucide.createIcons({
+                            root: ref.current,
+                            nameAttr: 'data-lucide',
+                            attrs: {
+                                class: className,
+                                width: size,
+                                height: size
+                            }
+                        });
+                    }
+                }
+            }, [name, size, className]);
+
+            return <span ref={ref} className="inline-flex items-center justify-center"></span>;
+        };
+
+        // 개별 아이콘 래퍼
+        const MenuIcon = (props) => <Icon name="menu" {...props} />;
+        const XIcon = (props) => <Icon name="x" {...props} />;
+        const Users = (props) => <Icon name="users" {...props} />;
+        const BookOpen = (props) => <Icon name="book-open" {...props} />;
+        const MapPin = (props) => <Icon name="map-pin" {...props} />;
+        const Mail = (props) => <Icon name="mail" {...props} />;
+        const Phone = (props) => <Icon name="phone" {...props} />;
+        const ChevronRight = (props) => <Icon name="chevron-right" {...props} />;
+        const GraduationCap = (props) => <Icon name="graduation-cap" {...props} />;
+        const FileText = (props) => <Icon name="file-text" {...props} />;
+        const Briefcase = (props) => <Icon name="briefcase" {...props} />;
+        const ExternalLink = (props) => <Icon name="external-link" {...props} />;
+        const BarChart3 = (props) => <Icon name="chart-column" {...props} />;
+        const Settings = (props) => <Icon name="settings" {...props} />;
+        const Cpu = (props) => <Icon name="cpu" {...props} />;
+        const ChevronDown = (props) => <Icon name="chevron-down" {...props} />;
+        const ChevronUp = (props) => <Icon name="chevron-up" {...props} />;
+        const Globe = (props) => <Icon name="globe" {...props} />;
+
+        function MeritLabWebsite() {
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+            const [activeSection, setActiveSection] = useState('home');
+            const [showAllProjects, setShowAllProjects] = useState(false);
+            const [showAllPublications, setShowAllPublications] = useState(false);
+
+            const sections = ['home', 'about', 'professor', 'research', 'projects', 'publications', 'contact'];
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    const scrollPosition = window.scrollY + 100;
+                    for (const section of sections) {
+                        const element = document.getElementById(section);
+                        if (element && element.offsetTop <= scrollPosition && (element.offsetTop + element.offsetHeight) > scrollPosition) {
+                            setActiveSection(section);
+                        }
+                    }
+                };
+                window.addEventListener('scroll', handleScroll);
+                if (window.lucide) window.lucide.createIcons();
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const scrollToSection = (id) => {
+                setIsMenuOpen(false);
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            };
+
+            const areaIcons = [
+                <Settings className="text-blue-600" size={32} />,
+                <BarChart3 className="text-blue-600" size={32} />,
+                <Cpu className="text-blue-600" size={32} />
+            ];
+
+            const visibleProjects = showAllProjects ? DATA.projects : DATA.projects.slice(0, 3);
+            const visiblePublications = showAllPublications ? DATA.publications : DATA.publications.slice(0, 3);
+
+            return (
+                <div className="font-sans text-slate-800 bg-gray-50">
+                <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => scrollToSection('home')}>
+                        <div className="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center mr-2">
+                            <span className="text-white font-bold text-lg">M</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-bold text-xl text-slate-900 tracking-tight leading-none">{DATA.info.name}</span>
+                            <span className="text-[10px] text-slate-500 font-medium tracking-wider">SERI @ {DATA.info.university}</span>
+                        </div>
+                        </div>
+                        <div className="hidden md:flex space-x-6">
+                        {sections.map((item) => (
+                            <button key={item} onClick={() => scrollToSection(item)} className={`text-sm font-medium capitalize transition-colors duration-200 ${activeSection === item ? 'text-blue-700' : 'text-slate-500 hover:text-blue-600'}`}>
+                            {item}
+                            </button>
+                        ))}
+                        </div>
+                        <div className="md:hidden flex items-center">
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-600 hover:text-blue-600">
+                            {isMenuOpen ? <XIcon size={24} /> : <MenuIcon size={24} />}
+                        </button>
+                        </div>
+                    </div>
+                    </div>
+                    {isMenuOpen && (
+                    <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+                        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                        {sections.map((item) => (
+                            <button key={item} onClick={() => scrollToSection(item)} className="block w-full text-left px-3 py-2 rounded-md text-base font-medium capitalize text-slate-600 hover:text-blue-600 hover:bg-blue-50">
+                            {item}
+                            </button>
+                        ))}
+                        </div>
+                    </div>
+                    )}
+                </nav>
+
+                {/* Hero Section */}
+                <section id="home" className="pt-24 pb-12 md:pt-32 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+                    <div className="text-center space-y-12 animate-fade-in-up">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-base md:text-lg font-semibold mb-4 shadow-sm border border-blue-100">
+                            {DATA.info.affiliation} | {DATA.info.university}
+                        </div>
+                        
+                        <h1 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                            <span className="text-blue-700">M</span>anagement of 
+                            <span className="text-blue-700"> E</span>nergy 
+                            <span className="text-blue-700"> R</span>esources via 
+                            <span className="text-blue-700"> I</span>ntelligent 
+                            <span className="text-blue-700"> T</span>echniques
+                        </h1>
+
+                        <div className="max-w-3xl mx-auto space-y-4">
+                            <p className="text-lg md:text-xl text-slate-700 font-medium whitespace-pre-line">
+                                {DATA.info.heroDescKo}
+                            </p>
+                            <p className="text-base md:text-lg text-slate-500 whitespace-pre-line">
+                                {DATA.info.heroDescEn}
+                            </p>
+                        </div>
+
+                        <div className="flex justify-center gap-4 mt-8">
+                            <button onClick={() => scrollToSection('research')} className="px-8 py-3 rounded-lg bg-blue-700 text-white font-semibold shadow-lg hover:bg-blue-800 transition-all hover:-translate-y-1">
+                            Research Areas
+                            </button>
+                            <button onClick={() => scrollToSection('projects')} className="px-8 py-3 rounded-lg bg-white text-slate-700 font-semibold border border-slate-200 shadow-sm hover:bg-slate-50 transition-all">
+                            Projects
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* About Section */}
+                <section id="about" className="py-16 bg-white">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid md:grid-cols-2 gap-12 items-center">
+                        <div className="space-y-6">
+                            <h2 className="text-3xl font-bold text-slate-900">{DATA.info.aboutTitle}</h2>
+                            <div className="w-16 h-1 bg-blue-600 rounded"></div>
+                            <p className="text-lg text-slate-600 leading-relaxed whitespace-pre-line">
+                                {DATA.info.aboutDesc}
+                            </p>
+                            
+                            <div className="grid grid-cols-1 gap-3 mt-6">
+                                <div className="flex items-center text-slate-700 font-medium p-3 bg-slate-50 rounded-lg">
+                                    <div className="bg-blue-100 p-2 rounded-full mr-3 text-blue-600"><Settings size={20}/></div>
+                                    <span>Robust Optimization</span>
+                                </div>
+                                <div className="flex items-center text-slate-700 font-medium p-3 bg-slate-50 rounded-lg">
+                                    <div className="bg-blue-100 p-2 rounded-full mr-3 text-blue-600"><Cpu size={20}/></div>
+                                    <span>Practical AI Solutions</span>
+                                </div>
+                                <div className="flex items-center text-slate-700 font-medium p-3 bg-slate-50 rounded-lg">
+                                    <div className="bg-blue-100 p-2 rounded-full mr-3 text-blue-600"><Globe size={20}/></div>
+                                    <span>Sustainable Future Grid</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-slate-100 rounded-2xl p-8 h-80 flex items-center justify-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-slate-200 opacity-50"></div>
+                            <div className="relative text-center">
+                                <Users size={64} className="mx-auto text-slate-400 mb-4" />
+                                <p className="text-slate-500 font-medium">Lab Photo / Environment</p>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                {/* Professor Section */}
+                <section id="professor" className="py-16 bg-slate-50">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                        <div className="md:flex">
+                            <div className="md:w-1/3 bg-slate-800 text-white p-8 flex flex-col items-center justify-center text-center">
+                            <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-slate-600 mb-8 overflow-hidden border-4 border-slate-500">
+
+                                {DATA.professor.profileImage ? (
+                                    <img 
+                                        src={DATA.professor.profileImage} 
+                                        alt={DATA.professor.name}
+                                        className="w-full h-full object-cover scale-105"
+                                        style={{ objectPosition: "50% 30%" }}
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-slate-700">
+                                        <span className="text-4xl text-slate-500 font-bold italic">Lab</span>
+                                    </div>
+                                )}
+                            </div>
+                            <h3 className="text-2xl font-bold whitespace-pre-line leading-snug">{DATA.professor.name}</h3>
+                            <p className="text-blue-300 font-medium mb-4">{DATA.professor.title}</p>
+                            <a href={`mailto:${DATA.professor.email}`} className="flex items-center text-sm text-slate-300 hover:text-white transition-colors">
+                            <Mail size={16} className="mr-2" /> {DATA.professor.email}
+                            </a>
+                        </div>
+                        <div className="md:w-2/3 p-8 md:p-12 space-y-10">
+                            {/* Biography */}
+                            <div>
+                                <h4 className="text-xl font-bold text-slate-900 mb-4 flex items-center">
+                                <BookOpen className="text-blue-600 mr-2" size={24} /> Biography
+                                </h4>
+                                <div className="space-y-4 text-slate-600">
+                                {DATA.professor.bio.map((line, i) => (
+                                    <p key={i}>{line}</p>
+                                ))}
+                                </div>
+                            </div>
+
+                            {/* [NEW] Career */}
+                            <div>
+                                <h4 className="text-xl font-bold text-slate-900 mb-4 flex items-center">
+                                <Briefcase className="text-blue-600 mr-2" size={24} /> Career
+                                </h4>
+                                <ul className="space-y-2 text-slate-600">
+                                {DATA.professor.career.map((item, i) => (
+                                    <li key={i} className="flex items-start">
+                                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                    {item}
+                                    </li>
+                                ))}
+                                </ul>
+                            </div>
+
+                            {/* Education */}
+                            <div>
+                                <h4 className="text-xl font-bold text-slate-900 mb-4 flex items-center">
+                                <GraduationCap className="text-blue-600 mr-2" size={24} /> Education
+                                </h4>
+                                <ul className="space-y-2 text-slate-600">
+                                {DATA.professor.education.map((edu, i) => (
+                                    <li key={i} className="flex items-start">
+                                    <span className="w-2 h-2 bg-slate-300 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                    {edu}
+                                    </li>
+                                ))}
+                                </ul>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                {/* Research Section */}
+                <section id="research" className="py-16 bg-white">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl font-bold text-slate-900">Research Areas</h2>
+                            <div className="w-16 h-1 bg-blue-600 rounded mx-auto mt-4"></div>
+                            <p className="mt-4 text-slate-600">Core Technologies & Methods</p>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-8">
+                            {DATA.researchAreas.map((area, index) => (
+                            <div key={index} className="bg-slate-50 rounded-xl p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-slate-100 flex flex-col h-full">
+                                <div className="w-14 h-14 bg-white rounded-lg shadow-sm flex items-center justify-center mb-6">
+                                    {areaIcons[index] || <Settings className="text-blue-600" size={32} />}
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">{area.title}</h3>
+                                <p className="text-slate-600 leading-relaxed mb-6 flex-grow text-sm">
+                                    {area.desc}
+                                </p>
+                                
+                                {/* Keywords Tags Section */}
+                                <div className="mt-auto flex flex-wrap gap-2 pt-4 border-t border-slate-200">
+                                    {area.keywords && area.keywords.map((kw, idx) => (
+                                        <span key={idx} className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-md border border-blue-100">
+                                            {kw}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Projects Section */}
+                <section id="projects" className="py-16 bg-slate-50">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+                        <div>
+                        <h2 className="text-3xl font-bold text-slate-900">Projects</h2>
+                        <div className="w-16 h-1 bg-blue-600 rounded mt-4"></div>
+                        </div>
+                        <div className="mt-4 md:mt-0 text-slate-500 text-sm">
+                        Current & Past Projects
+                        </div>
+                    </div>
+
+                    <div className="grid gap-6">
+                        {visibleProjects.map((project, index) => (
+                        <div key={index} className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-blue-600 hover:shadow-md transition-shadow animate-fade-in-up">
+                            <div className="flex flex-col md:flex-row md:justify-between md:items-start">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                <h3 className="text-lg font-bold text-slate-900">{project.title}</h3>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${project.status === 'Ongoing' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                    {project.status}
+                                </span>
+                                </div>
+                                {project.titleEn && (
+                                    <div className="text-sm text-slate-500 italic font-medium mb-3 leading-snug">
+                                        {project.titleEn}
+                                    </div>
+                                )}
+                                <p className="text-slate-600 mb-3">{project.description}</p>
+                                <div className="flex flex-wrap gap-4 text-sm text-slate-500">
+                                <span className="flex items-center"><Briefcase size={14} className="mr-1"/> {project.funding}</span>
+                                </div>
+                            </div>
+                            <div className="mt-4 md:mt-0 md:ml-6 whitespace-nowrap text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded">
+                                {project.period}
+                            </div>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+
+                    {DATA.projects.length > 3 && (
+                        <div className="mt-8 text-center">
+                        <button 
+                            onClick={() => setShowAllProjects(!showAllProjects)}
+                            className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors"
+                        >
+                            {showAllProjects ? (
+                            <>View Less Projects <ChevronUp className="ml-1" size={20} /></>
+                            ) : (
+                            <>View All Projects <ChevronDown className="ml-1" size={20} /></>
+                            )}
+                        </button>
+                        </div>
+                    )}
+                    </div>
+                </section>
+
+                {/* Publications Section */}
+                <section id="publications" className="py-16 bg-white">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="mb-12">
+                        <h2 className="text-3xl font-bold text-slate-900">Publications</h2>
+                        <div className="w-16 h-1 bg-blue-600 rounded mt-4"></div>
+                        <p className="mt-4 text-slate-600">Selected Papers & Conferences</p>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        {visiblePublications.map((pub, index) => (
+                        <div key={index} className={`p-6 ${index !== visiblePublications.length - 1 ? 'border-b border-slate-100' : ''} hover:bg-slate-50 transition-colors animate-fade-in-up`}>
+                            <div className="flex items-start gap-4">
+                            <div className="hidden sm:flex flex-col items-center justify-center w-16 h-16 bg-blue-50 rounded-lg text-blue-700 flex-shrink-0">
+                                <FileText size={24} />
+                                <span className="text-xs font-bold mt-1">{pub.year}</span>
+                            </div>
+                            <div>
+                                <h4 className="text-lg font-semibold text-slate-900 mb-1">
+                                    {pub.link ? (
+                                        <a href={pub.link} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 hover:underline">
+                                            {pub.title}
+                                        </a>
+                                    ) : (
+                                        pub.title
+                                    )}
+                                </h4>
+                                <p className="text-slate-600 text-sm mb-2">{pub.authors}</p>
+                                <div className="flex items-center gap-3 text-sm">
+                                <span className="font-medium text-blue-700 italic">{pub.journal}</span>
+                                <span className="text-slate-400">•</span>
+                                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-500 text-xs">{pub.type}</span>
+                                <span className="sm:hidden text-slate-500">({pub.year})</span>
+                            </div>
+                            </div>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+
+                    {DATA.publications.length > 3 && (
+                        <div className="mt-8 text-center">
+                        <button 
+                            onClick={() => setShowAllPublications(!showAllPublications)}
+                            className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors"
+                        >
+                            {showAllPublications ? (
+                            <>View Less Publications <ChevronUp className="ml-1" size={20} /></>
+                            ) : (
+                            <>View All Publications <ChevronDown className="ml-1" size={20} /></>
+                            )}
+                        </button>
+                        </div>
+                    )}
+                    </div>
+                </section>
+
+                <section id="contact" className="py-16 bg-slate-900 text-white">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid md:grid-cols-2 gap-12">
+                        <div>
+                        <h2 className="text-3xl font-bold mb-6">Contact Us</h2>
+                        <p className="text-slate-400 mb-8">
+                            연구실 합류에 관심이 있거나 공동 연구를 원하시는 분들은 언제든 연락 바랍니다.
+                        </p>
+                        
+                        <div className="space-y-6">
+                            <div className="flex items-start">
+                            <MapPin className="text-blue-500 mt-1 mr-4" size={24} />
+                            <div>
+                                <h4 className="font-bold text-lg">Location</h4>
+                                <p className="text-slate-400 whitespace-pre-line">{DATA.contact.location}</p>
+                            </div>
+                            </div>
+                            
+                            <div className="flex items-start">
+                            <Mail className="text-blue-500 mt-1 mr-4" size={24} />
+                            <div>
+                                <h4 className="font-bold text-lg">Email</h4>
+                                <p className="text-slate-400">{DATA.professor.email}</p>
+                            </div>
+                            </div>
+
+                            <div className="flex items-start">
+                            <Phone className="text-blue-500 mt-1 mr-4" size={24} />
+                            <div>
+                                <h4 className="font-bold text-lg">Phone</h4>
+                                <p className="text-slate-400">{DATA.contact.phone}</p>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                        
+                        <div className="bg-slate-800 rounded-xl overflow-hidden h-64 md:h-96 border border-slate-700 relative">
+                            <iframe 
+                                width="100%" 
+                                height="100%" 
+                                style={{ border: 0, minHeight: '300px' }}
+                                loading="lazy" 
+                                allowFullScreen
+                                referrerPolicy="no-referrer-when-downgrade"
+                                src="https://maps.google.com/maps?q=가천대학교+공과대학2&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                            >
+                            </iframe>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                <footer className="bg-slate-950 py-10 border-t border-slate-900">
+                    <div className="max-w-6xl mx-auto px-4 text-center">
+                    <p className="text-slate-500 text-sm mb-4">&copy; {new Date().getFullYear()} {DATA.info.name}, {DATA.info.university}. All rights reserved.</p>
+                    
+                    <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-sm text-slate-400">
+                        <span>{DATA.info.affiliation}</span>
+                        <span className="hidden md:inline text-slate-700">|</span>
+                        <a 
+                        href={DATA.info.seriLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center hover:text-blue-400 transition-colors"
+                        >
+                        Visit SERI Website <ExternalLink size={14} className="ml-1" />
+                        </a>
+                    </div>
+                    </div>
+                </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<MeritLabWebsite />);
+    </script>
+</body>
